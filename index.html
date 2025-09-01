@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🚀 Online Java Compiler</title>
+
+  <!-- CodeMirror CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/dracula.min.css">
+
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      margin: 0;
+      background: #f8f9fa;
+    }
+    header {
+      background: #007bff;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+    main {
+      display: flex;
+      gap: 1rem;
+      padding: 1rem;
+      max-width: 1200px;
+      margin: auto;
+    }
+    .editor {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .editor button {
+      margin-top: 1rem;
+      padding: 12px;
+      font-size: 16px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .editor button:hover { background-color: #218838; }
+
+    .results {
+      flex: 1;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+#astContainer {
+  width: 100%;
+  height: 500px;
+  overflow: auto;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: #fafafa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#astContainer img {
+  max-width: 100%;
+  height: auto;
+  transition: transform 0.2s ease;
+  transform-origin: center center;
+}
+
+.zoom-controls {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+    /* Tabs */
+    .tab-buttons {
+      display: flex;
+      background: #f1f1f1;
+    }
+    .tab-buttons button {
+      flex: 1;
+      padding: 10px;
+      cursor: pointer;
+      border: none;
+      background: #f1f1f1;
+      font-weight: bold;
+    }
+    .tab-buttons button.active {
+      background: #007bff;
+      color: white;
+    }
+    .tab-content {
+      display: none;
+      padding: 1rem;
+      overflow-y: auto;
+      height: 400px;
+    }
+    .tab-content.active { display: block; }
+
+    pre {
+      background: #f4f4f4;
+      padding: 10px;
+      border-radius: 6px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .success { color: green; font-weight: bold; }
+    .error { color: red; font-weight: bold; }
+    .info { color: #555; }
+    img { max-width: 100%; border: 1px solid #ccc; border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🚀 Online Java Compiler</h1>
+    <p>Write, Compile, Run, and Analyze Java Code</p>
+  </header>
+
+  <main>
+    <!-- Code Editor -->
+    <div class="editor">
+      <textarea id="javaCode">
+public class Main {
+    public static void main(String[] args) {
+        System.out.println("Hello, Compiler!");
+    }
+}
+      </textarea>
+      <button onclick="compileAndRun()">Compile & Run</button>
+    </div>
+
+    <!-- Results -->
+    <div class="results">
+      <div class="tab-buttons">
+        <button class="tablink active" onclick="openTab(event,'executionTab')">Execution</button>
+        <button class="tablink" onclick="openTab(event,'analysisTab')">Analysis</button>
+        <button class="tablink" onclick="openTab(event,'summaryTab')">Summary</button>
+        <button class="tablink" onclick="openTab(event,'astTab')">AST</button>
+      </div>
+      <div id="executionTab" class="tab-content active">
+        <pre id="executionOutput"></pre>
+      </div>
+      <div id="analysisTab" class="tab-content">
+        <pre id="lexicalOutput"></pre>
+        <pre id="syntaxOutput"></pre>
+        <pre id="complexityOutput"></pre>
+      </div>
+      <div id="summaryTab" class="tab-content">
+        <pre id="summaryOutput"></pre>
+        <pre id="suggestionOutput"></pre>
+      </div>
+      <div id="astTab" class="tab-content">
+        <div class="card">
+          <h2><center>AST Visualization</center></h2>
+          <div id="astContainer">
+            <img id="astImage" src="" alt="Abstract Syntax Tree">
+          </div>
+          <div class="zoom-controls">
+            <label for="zoomRange"><b>Zoom:</b></label>
+            <input type="range" id="zoomRange" min="0.5" max="2" value="1" step="0.1">
+            <button id="resetZoom">Reset</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- CodeMirror JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/clike/clike.min.js"></script>
+
+  <script>
+    // Initialize CodeMirror
+    var editor = CodeMirror.fromTextArea(document.getElementById("javaCode"), {
+      lineNumbers: true,
+      mode: "text/x-java",
+      theme: "dracula"
+    });
+
+    // Tab switching
+    function openTab(evt, tabId) {
+      document.querySelectorAll(".tab-content").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".tablink").forEach(b => b.classList.remove("active"));
+      document.getElementById(tabId).classList.add("active");
+      evt.currentTarget.classList.add("active");
+    }
+
+    // Compile & Run
+    async function compileAndRun() {
+      const javaCode = editor.getValue();
+
+      // Reset outputs
+      document.getElementById("executionOutput").textContent = "Processing...";
+      document.getElementById("lexicalOutput").textContent = "Processing...";
+      document.getElementById("syntaxOutput").textContent = "Processing...";
+      document.getElementById("complexityOutput").textContent = "Processing...";
+      document.getElementById("summaryOutput").textContent = "Processing...";
+      document.getElementById("suggestionOutput").textContent = "Processing...";
+      document.getElementById("astImage").src = "";
+
+      try {
+        const response = await fetch("/compile_and_run", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ code: javaCode })
+        });
+
+        if (!response.ok) throw new Error(`Server error: ${response.status}`);
+        const data = await response.json();
+
+        // Execution
+        let execOut = "";
+        if (data.execution_status === "Execution Success") {
+          execOut += `✅ <span class="success">${data.execution_status}</span>\n\n`;
+        } else {
+          execOut += `❌ <span class="error">${data.execution_status}</span>\n\n`;
+        }
+        execOut += `Execution Output:\n${data.execution_output}`;
+        document.getElementById("executionOutput").innerHTML = execOut;
+
+        // Lexical
+        document.getElementById("lexicalOutput").textContent =
+          `Lexical Analysis Time: ${data.lexical_time}s\n\n` +
+          `Token Count:\n${JSON.stringify(data.lexical, null, 2)}\n\n` +
+          `Invalid Tokens:\n${JSON.stringify(data.invalid_tokens, null, 2)}`;
+
+        // Syntax
+        let syntaxOut = `Syntax Analysis Time: ${data.syntax_time}s\n\nStatus: ${data.syntax_result}\n\n`;
+        syntaxOut += data.syntax_errors.length > 0
+          ? `Errors:\n${data.syntax_errors.join("\n")}`
+          : "Errors: None";
+        document.getElementById("syntaxOutput").textContent = syntaxOut;
+
+        // Complexity
+        document.getElementById("complexityOutput").textContent = `Time Complexity: ${data.time_complexity}`;
+
+        // Summary
+        document.getElementById("summaryOutput").textContent = data.summary.join("\n");
+
+        // Suggestions
+        document.getElementById("suggestionOutput").textContent = data.suggestions.join("\n");
+
+        // AST
+        if (data.ast_image) {
+          document.getElementById("astImage").src = "/static/" + data.ast_image;
+        }
+
+      } catch (err) {
+        document.getElementById("executionOutput").innerHTML = `<span class="error">Error: ${err.message}</span>`;
+      }
+    }
+    // Zoom controls for AST
+    const zoomRange = document.getElementById("zoomRange");
+    const resetZoom = document.getElementById("resetZoom");
+    const astImg = document.getElementById("astImage");
+
+    let zoomLevel = 1;
+
+    zoomRange.addEventListener("input", () => {
+      zoomLevel = parseFloat(zoomRange.value);
+      astImg.style.transform = `scale(${zoomLevel})`;
+    });
+
+    resetZoom.addEventListener("click", () => {
+      zoomLevel = 1;
+      zoomRange.value = 1;
+      astImg.style.transform = "scale(1)";
+    });
+
+
+  </script>
+</body>
+</html>
