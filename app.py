@@ -2,9 +2,14 @@ import os
 import time
 import subprocess
 from graphviz import Digraph
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, render_template
 
 app = Flask(__name__, static_folder="static")
+
+@app.route("/")
+def home():
+    return render_template("index.html")
+
 
 # ---------- Lexical Analysis ----------
 def lexical_analysis(code):
@@ -246,6 +251,7 @@ def compile_and_run():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))  # Railway/Heroku gives PORT, default 5000 for local
     app.run(host="0.0.0.0", port=port)
+
 
 
 
