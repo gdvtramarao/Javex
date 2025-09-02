@@ -4,7 +4,8 @@ import subprocess
 from graphviz import Digraph
 from flask import Flask, request, jsonify, render_template
 
-app = Flask(__name__, static_folder="static")
+app = Flask(__name__, static_folder="static", template_folder="templates")
+
 
 @app.route("/")
 def home():
@@ -251,6 +252,7 @@ def compile_and_run():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))  # Railway/Heroku gives PORT, default 5000 for local
     app.run(host="0.0.0.0", port=port)
+
 
 
 
