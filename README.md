@@ -4,6 +4,15 @@ This project presents a **Java compiler web application** designed to assist tea
 
 ---
 
+## 🚀 Project Demo (Screenshots)
+
+<img width="1907" height="852" alt="demo1" src="https://github.com/user-attachments/assets/96a013f2-b166-4c75-832f-726507ba87ca" />
+
+<img width="1912" height="857" alt="demo2" src="https://github.com/user-attachments/assets/64d211fc-f02d-4ea3-8d34-869cfc45e0df" />
+
+<img width="1918" height="852" alt="demo3" src="https://github.com/user-attachments/assets/40f26fcd-427b-4c0d-b5c4-f1dfd05a01fb" />
+
+---
 ## ✨ Features
 - 🖊️ Online editor for typing Java code  
 - 🔍 Lexical & syntax analysis with error reporting  
