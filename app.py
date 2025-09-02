@@ -9,8 +9,8 @@ app = Flask(__name__, static_folder="static", template_folder="templates")
 
 @app.route("/")
 def home():
+    print("Looking for index.html in:", app.template_folder)
     return render_template("index.html")
-
 
 # ---------- Lexical Analysis ----------
 def lexical_analysis(code):
@@ -252,6 +252,7 @@ def compile_and_run():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))  # Railway/Heroku gives PORT, default 5000 for local
     app.run(host="0.0.0.0", port=port)
+
 
 
 
