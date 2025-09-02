@@ -244,7 +244,9 @@ def compile_and_run():
     })
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=PORT)
+    port = int(os.environ.get("PORT", 5000))  # Railway/Heroku gives PORT, default 5000 for local
+    app.run(host="0.0.0.0", port=port)
+
 
 
 
