@@ -1,0 +1,5 @@
+[build]
+builder = "NIXPACKS"
+
+[variables]
+NIXPACKS_INSTALL_PACKAGES = "openjdk-17-jdk graphviz"
