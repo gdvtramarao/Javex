@@ -4,6 +4,16 @@ This project presents a **Java compiler web application** designed to assist tea
 
 ---
 
+## 📦 Requirements
+
+Before running the project, make sure you have the following installed:
+
+- **Python 3.8+**  
+- **Java JDK (javac, java must be in PATH)**  
+- **Graphviz** (system tool, for AST visualization)  
+
+---
+
 ## 🚀 Project Demo (Screenshots)
 
 <img width="1907" height="852" alt="demo1" src="https://github.com/user-attachments/assets/96a013f2-b166-4c75-832f-726507ba87ca" />
@@ -50,15 +60,5 @@ This project presents a **Java compiler web application** designed to assist tea
 - Time complexity analysis → evaluates performance of algorithms
 
 - Summarization → provides structured feedback to both students & teachers
-
----
-
-## 📦 Requirements
-
-Before running the project, make sure you have the following installed:
-
-- **Python 3.8+**  
-- **Java JDK (javac, java must be in PATH)**  
-- **Graphviz** (system tool, for AST visualization)  
 
 ---
